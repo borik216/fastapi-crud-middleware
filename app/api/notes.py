@@ -11,6 +11,22 @@ router = APIRouter()
 def list_notes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(models.Note).filter(models.Note.deleted_at.is_(None)).offset(skip).limit(limit).all()
 
+@router.delete("/purge")
+def hard_delete_all_notes(db: Session = Depends(get_db)):
+    query = db.query(models.Note).filter(models.Note.deleted_at.is_not(None))
+    
+    if query.count() == 0:
+        raise HTTPException(
+            status_code=400, 
+            detail="No notes in the trash."
+        )
+        
+    # no need to sync session since these notes are not used or returned
+    query.delete(synchronize_session=False)
+    db.commit()
+    
+    return {"message": "All notes deleted from trash."}
+
 
 @router.get("/{note_id}", response_model=schemas.Note)
 def read_note(note_id: int, db: Session = Depends(get_db)):

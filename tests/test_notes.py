@@ -42,7 +42,12 @@ def client(db_session):
 EXPECTED_API_KEY = os.getenv("API_ACCESS_TOKEN", "default-secret-change-me")
 HEADERS = {"access_token": EXPECTED_API_KEY }
 
-
+def test_health_check(client):
+    """Test that health check is working properly and returning 200"""
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["status"] == "healthy"
+    
 def test_read_notes_unauthorized(client):
     """Test that we get a 403 if the API key is missing"""
     response = client.get("/api/v1/notes")
@@ -54,12 +59,6 @@ def test_read_notes_authorized(client):
     response = client.get("/api/v1/notes", headers=HEADERS)
     assert response.status_code == 200
     assert isinstance(response.json(), list)
-    
-def test_health_check(client):
-    """Test that health check is working properly and returning 200"""
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert response.json()["status"] == "healthy"
     
 def test_create_note(client):
     # 1. Create the note
@@ -113,6 +112,5 @@ def test_create_and_soft_delete(client):
     list_after_del = client.get("/api/v1/notes", headers=HEADERS)
     assert len(list_after_del.json()) == 0
     
-
 def test_create_and_purge(client):
     pass
