@@ -5,7 +5,7 @@ from app.middleware.latency_logging import PerformanceMonitorMiddleware
 from . import models, database
 from fastapi.middleware.cors import CORSMiddleware
 from app.middleware.logging import StructuredLoggingMiddleware
-import datetime
+from datetime import datetime
 from app.api import notes
 from app.api.deps.auth import validate_api_key
 
