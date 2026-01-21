@@ -9,6 +9,7 @@ router = APIRouter()
 
 @router.get("", response_model=List[schemas.Note])
 def list_notes(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    print("request - right in the middle")
     return db.query(models.Note).offset(skip).limit(limit).all()
 
 @router.get("/{note_id}", response_model=schemas.Note)

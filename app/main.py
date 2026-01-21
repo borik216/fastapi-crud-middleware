@@ -19,9 +19,7 @@ app.add_middleware(
     allow_headers=["X-API-KEY", "Content-Type"],
 )
 app.add_middleware(CorrelationIdMiddleware)        
-app.add_middleware(PerformanceMonitorMiddleware)
 app.add_middleware(StructuredLoggingMiddleware)
-
 
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["notes"], dependencies=[Security(validate_api_key)])
 

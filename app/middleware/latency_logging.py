@@ -4,10 +4,12 @@ import time
 
 class PerformanceMonitorMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        
         start_time = time.perf_counter()
         
         # Process the request
         response = await call_next(request)
+        
         # Calculate Latency (The time taken)
         process_time = time.perf_counter() - start_time
         

@@ -14,7 +14,6 @@ logger.addHandler(handler)
 
 class StructuredLoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        correlation_id = request.headers.get("X-Correlation-ID", str(uuid.uuid4()))
         start_time = time.time()
         
         # Process the request
@@ -33,8 +32,9 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
         }
         
         # Output as a single line of JSON
-        # 2. Add it back to the response header so the user can report it
-        response.headers["X-Correlation-ID"] = correlation_id
+
         logger.info(json.dumps(log_dict))
         
+        response.headers["X-Process-Time"] = f"{process_time:.4f}s"
+    
         return response
