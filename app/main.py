@@ -5,12 +5,12 @@ from app.middleware.latency_logging import PerformanceMonitorMiddleware
 from . import models, database
 from fastapi.middleware.cors import CORSMiddleware
 from app.middleware.logging import StructuredLoggingMiddleware
-from time import datetime
+import datetime
 from app.api import notes
+from app.api.deps.auth import validate_api_key
 
 models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI(title="Basic-CRUD-APP")
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +21,28 @@ app.add_middleware(
 app.add_middleware(CorrelationIdMiddleware)        
 app.add_middleware(PerformanceMonitorMiddleware)
 app.add_middleware(StructuredLoggingMiddleware)
+
+
+app.include_router(notes.router, prefix="/api/v1/notes", tags=["notes"], dependencies=[Security(validate_api_key)])
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": datetime.utcnow()}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 # app.add_middleware(SecretAccessMiddleware)
 
 API_KEY_NAME = "access_token"
@@ -33,14 +55,3 @@ def validate_api_key(api_key: str = Security(api_key_header)):
             detail="Unauthorized Access"
         )
     return True
-
-app.include_router(notes.router, prefix="/notes", tags=["notes"])
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy", "timestamp": datetime.utcnow()}
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
