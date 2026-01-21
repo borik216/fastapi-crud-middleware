@@ -2,3 +2,6 @@ scapy
 fastapi
 uvicorn
 sqlalchemy
+pytest
+httpx
+dotenv

@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Security, status, Depends
 from fastapi.security import APIKeyHeader
 from app.middleware.correlation import CorrelationIdMiddleware 
-from app.middleware.latency_logging import PerformanceMonitorMiddleware
 from . import models, database
 from fastapi.middleware.cors import CORSMiddleware
 from app.middleware.logging import StructuredLoggingMiddleware
@@ -15,7 +14,7 @@ app = FastAPI(title="Basic-CRUD-APP")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://secure-notes.example.com"], # Only allow your frontend
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "PUT"],
     allow_headers=["X-API-KEY", "Content-Type"],
 )
 app.add_middleware(CorrelationIdMiddleware)        
