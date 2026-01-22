@@ -67,7 +67,6 @@ def update_note(note_id: int, note: schemas.NoteUpdate, db: Session = Depends(ge
     
     return db_note
 
-
 @router.delete("/{note_id}")
 def soft_delete_note(note_id: int, db: Session = Depends(get_db)):
     db_note = db.query(models.Note).filter(models.Note.id == note_id).first()

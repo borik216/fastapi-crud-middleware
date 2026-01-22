@@ -113,4 +113,29 @@ def test_create_and_soft_delete(client):
     assert len(list_after_del.json()) == 0
     
 def test_create_and_purge(client):
-    pass
+    # 1. Create a note
+    new_note = {"title": "Test Secret", "tags": "test", "created_by": "tester"}
+    create_resp = client.post("/api/v1/notes", json=new_note, headers=HEADERS)
+    assert create_resp.status_code == 200
+    note_id = create_resp.json()["id"]
+    
+    # 2. Verify it's in the list
+    list_resp = client.get("/api/v1/notes", headers=HEADERS)
+    assert len(list_resp.json()) == 1
+    
+    # 3. Soft Delete it
+    del_resp = client.delete(f"/api/v1/notes/{note_id}", headers=HEADERS)
+    assert del_resp.status_code == 200
+    
+    # 4. Make sure it is deleted (deleted_at not null)
+    soft_deleted_note = client.get(f"/api/v1/notes/{note_id}", headers=HEADERS)
+    assert soft_deleted_note.json()["deleted_at"] is not None
+    
+    # 5. Purge note
+    purge_resp = client.delete(f"/api/v1/notes/purge/{note_id}", headers=HEADERS)
+    assert purge_resp.status_code == 200
+    
+    # 6. Make sure it doesn't exist anymore
+    list_resp = client.get("/api/v1/notes", headers=HEADERS)
+    assert len(list_resp.json()) == 0
+    
