@@ -30,4 +30,4 @@ jobs:
           API_ACCESS_TOKEN: cp-secure-key-2026
         run: |
           export PYTHONPATH=$PYTHONPATH:.
-          pytest
+          pytest --disable-warnings
